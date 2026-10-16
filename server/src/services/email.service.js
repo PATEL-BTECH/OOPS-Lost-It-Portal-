@@ -10,11 +10,12 @@ let transporter = null;
 const getTransporter = () => {
   if (transporter) return transporter;
 
-  const emailUser = process.env.EMAIL_USER;
-  const emailPass = process.env.EMAIL_PASS;
+  const emailUser = process.env.EMAIL_USER || process.env.SMTP_USER;
+  const rawPass = process.env.EMAIL_PASS || process.env.SMTP_PASS;
+  const emailPass = rawPass ? rawPass.replace(/\s+/g, '') : null;
 
   if (emailUser && emailPass) {
-    transporter = nodemailer.createTransporter({
+    transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
         user: emailUser,
