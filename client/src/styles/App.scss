@@ -1,0 +1,363 @@
+@use 'variables' as *;
+@use 'mixins' as *;
+
+// ==========================================
+// Application Layout & Component Styles
+// ==========================================
+
+.app-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: $bg-main;
+}
+
+// Navigation Bar
+.navbar {
+  @include glassmorphism;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  border-bottom: 1px solid $border-light;
+  padding: 0.875rem 2rem;
+
+  .nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    @include flex-between;
+  }
+
+  .nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+
+    .brand-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, $primary-600, $primary-800);
+      border-radius: $radius-md;
+      @include flex-center;
+      color: $text-inverse;
+      box-shadow: $shadow-md;
+    }
+
+    .brand-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: $text-main;
+      letter-spacing: -0.02em;
+
+      span {
+        color: $primary-600;
+      }
+    }
+
+    .brand-badge {
+      background: $primary-100;
+      color: $primary-700;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.2rem 0.5rem;
+      border-radius: $radius-full;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+  }
+
+  .nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+}
+
+// Main Content
+.main-content {
+  flex: 1;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem;
+}
+
+// Hero Section
+.hero-card {
+  @include card-surface;
+  padding: 2.5rem;
+  margin-bottom: 2rem;
+  background: linear-gradient(135deg, #ffffff 0%, #fdfcff 60%, $primary-50 100%);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -50px;
+    right: -50px;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(124, 58, 237, 0.15) 0%, rgba(255, 255, 255, 0) 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .hero-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: $primary-700;
+    background: $primary-100;
+    padding: 0.3rem 0.8rem;
+    border-radius: $radius-full;
+    margin-bottom: 1rem;
+  }
+
+  h1 {
+    font-size: 2.25rem;
+    color: $text-main;
+    margin-bottom: 0.75rem;
+    letter-spacing: -0.025em;
+
+    .highlight {
+      background: linear-gradient(135deg, $primary-700, $primary-500);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  }
+
+  p {
+    font-size: 1.05rem;
+    color: $text-secondary;
+    max-width: 780px;
+    line-height: 1.6;
+    margin-bottom: 1.75rem;
+  }
+
+  .hero-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+  }
+}
+
+// Buttons
+.btn-primary {
+  @include btn-base;
+  background: linear-gradient(135deg, $primary-600, $primary-700);
+  color: $text-inverse;
+  box-shadow: 0 4px 12px rgba(109, 40, 217, 0.25);
+
+  &:hover {
+    background: linear-gradient(135deg, $primary-700, $primary-800);
+    box-shadow: 0 6px 16px rgba(109, 40, 217, 0.35);
+    color: $text-inverse;
+  }
+}
+
+.btn-secondary {
+  @include btn-base;
+  background: $bg-surface;
+  color: $text-secondary;
+  border: 1px solid $border-light;
+
+  &:hover {
+    background: $bg-subtle;
+    color: $text-main;
+    border-color: $primary-300;
+  }
+}
+
+.btn-danger-outline {
+  @include btn-base;
+  background: transparent;
+  color: $danger-accent;
+  border: 1px solid $danger-border;
+
+  &:hover {
+    background: $danger-bg;
+  }
+}
+
+// Grid Layout for Diagnostics
+.grid-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.metric-card {
+  @include card-surface;
+  padding: 1.5rem;
+
+  .metric-header {
+    @include flex-between;
+    margin-bottom: 1rem;
+
+    .metric-title {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: $text-secondary;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .metric-icon-wrap {
+      width: 36px;
+      height: 36px;
+      border-radius: $radius-md;
+      @include flex-center;
+      background: $primary-50;
+      color: $primary-600;
+    }
+  }
+
+  .metric-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: $text-main;
+    margin-bottom: 0.35rem;
+    font-family: $font-display;
+  }
+
+  .metric-detail {
+    font-size: 0.85rem;
+    color: $text-muted;
+  }
+}
+
+// System Health Diagnostics Box
+.diagnostics-panel {
+  @include card-surface;
+  padding: 1.75rem;
+  margin-bottom: 2rem;
+
+  .panel-header {
+    @include flex-between;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid $border-light;
+
+    h2 {
+      font-size: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+  }
+
+  .raw-json {
+    background: #0f172a;
+    color: #38bdf8;
+    padding: 1.25rem;
+    border-radius: $radius-md;
+    font-size: 0.85rem;
+    overflow-x: auto;
+    line-height: 1.6;
+    max-height: 280px;
+  }
+}
+
+// Team Ownership Matrix
+.team-section {
+  @include card-surface;
+  padding: 1.75rem;
+  margin-bottom: 2rem;
+
+  .section-title {
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.25rem;
+  }
+
+  .team-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1rem;
+  }
+
+  .member-card {
+    background: $bg-subtle;
+    border: 1px solid $border-light;
+    border-radius: $radius-md;
+    padding: 1.25rem;
+    transition: all $transition-fast;
+
+    &:hover {
+      background: #ffffff;
+      border-color: $primary-300;
+      transform: translateY(-2px);
+      box-shadow: $shadow-sm;
+    }
+
+    .member-name {
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: $text-main;
+      margin-bottom: 0.25rem;
+    }
+
+    .member-role {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: $primary-700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.6rem;
+    }
+
+    .member-modules {
+      font-size: 0.85rem;
+      color: $text-secondary;
+      line-height: 1.45;
+    }
+  }
+}
+
+// AWT Syllabus Checklist
+.syllabus-card {
+  @include card-surface;
+  padding: 1.75rem;
+
+  h3 {
+    margin-bottom: 1rem;
+    font-size: 1.15rem;
+  }
+
+  .syllabus-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+
+    .concept-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.35rem 0.75rem;
+      background: $primary-50;
+      color: $primary-700;
+      border: 1px solid $primary-200;
+      border-radius: $radius-full;
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+  }
+}
+
+// Footer
+.footer {
+  margin-top: auto;
+  border-top: 1px solid $border-light;
+  background: $bg-surface;
+  padding: 1.5rem 2rem;
+  text-align: center;
+  font-size: 0.875rem;
+  color: $text-muted;
+}

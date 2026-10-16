@@ -1,0 +1,67 @@
+@use 'variables' as *;
+
+// ==========================================
+// Global Resets & Typography
+// ==========================================
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: $font-sans;
+  background-color: $bg-main;
+  color: $text-main;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: $font-display;
+  color: $text-main;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+a {
+  color: $primary-600;
+  text-decoration: none;
+  transition: color $transition-fast;
+
+  &:hover {
+    color: $primary-700;
+  }
+}
+
+code, pre {
+  font-family: 'Consolas', 'Courier New', monospace;
+  font-size: 0.875rem;
+}
+
+// Custom scrollbar
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: $bg-subtle;
+}
+
+::-webkit-scrollbar-thumb {
+  background: $primary-300;
+  border-radius: $radius-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: $primary-500;
+}
