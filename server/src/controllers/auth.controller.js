@@ -202,10 +202,41 @@ const devLogin = async (req, res, next) => {
   }
 };
 
+/**
+ * PATCH /api/auth/profile
+ * Update student profile questions (name, phone, studentId, department)
+ */
+const updateProfile = async (req, res, next) => {
+  try {
+    const { name, phone, studentId, department } = req.body;
+
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found.' });
+    }
+
+    if (name && name.trim()) user.name = name.trim();
+    if (phone !== undefined) user.phone = phone.trim();
+    if (studentId !== undefined) user.studentId = studentId.trim();
+    if (department !== undefined) user.department = department.trim();
+
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Profile details saved successfully.',
+      user: user.toPublicJSON()
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   googleLogin,
   getCurrentUser,
   getSessionInfo,
+  updateProfile,
   requestRoleElevation,
   logout,
   devLogin

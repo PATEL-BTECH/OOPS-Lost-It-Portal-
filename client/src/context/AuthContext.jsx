@@ -81,6 +81,20 @@ export const AuthProvider = ({ children }) => {
     return await api.get('/auth/session');
   };
 
+  // Update student profile details (phone, studentId, department, etc.)
+  const updateProfile = async (profileData) => {
+    try {
+      const response = await api.patch('/auth/profile', profileData);
+      if (response.success && response.user) {
+        setUser(response.user);
+        return { success: true, user: response.user };
+      }
+      throw new Error(response.message || 'Profile update failed.');
+    } catch (err) {
+      return { success: false, error: err.message || 'Failed to update profile.' };
+    }
+  };
+
   // Logout
   const logout = async () => {
     setLoading(true);
@@ -104,6 +118,7 @@ export const AuthProvider = ({ children }) => {
     isSecurity: user?.role === 'security',
     loginWithGoogle,
     loginDevUser,
+    updateProfile,
     requestRoleElevation,
     getSessionInfo,
     logout,

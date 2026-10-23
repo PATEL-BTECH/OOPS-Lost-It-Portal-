@@ -116,6 +116,12 @@ const authenticateGoogleUser = async (googleProfile) => {
       await user.save();
     } else {
       // Safe new registration: ALWAYS default to student role
+      const emailPrefix = (googleProfile.email.split('@')[0] || '').toUpperCase();
+      let derivedStudentId = '';
+      if (/^[0-9]{2}[A-Z]{2,4}[0-9]{2,6}$/i.test(emailPrefix)) {
+        derivedStudentId = emailPrefix;
+      }
+
       user = await User.create({
         name: googleProfile.name,
         email: googleProfile.email,
@@ -123,6 +129,7 @@ const authenticateGoogleUser = async (googleProfile) => {
         emailVerified: true,
         profileImage: googleProfile.profileImage,
         role: 'student', // Never grant elevated roles on registration
+        studentId: derivedStudentId,
         authMethod: 'google',
         lastLoginAt: new Date(),
         isBlocked: false

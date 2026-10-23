@@ -8,6 +8,7 @@ import AppLayout from './components/AppLayout';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import CompleteProfile from './pages/CompleteProfile';
 import AccountProfile from './pages/AccountProfile';
 import StudentDashboard from './pages/StudentDashboard';
 import AdminDashboard from './pages/AdminDashboard';
@@ -37,6 +38,7 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+              <Route path="/complete-profile" element={<CompleteProfile />} />
               <Route path="/items" element={<BrowseItems />} />
               <Route path="/items/:type/:id" element={<ItemDetail />} />
 

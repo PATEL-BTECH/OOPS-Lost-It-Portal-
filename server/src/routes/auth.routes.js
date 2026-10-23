@@ -7,6 +7,7 @@ const {
   googleLogin,
   getCurrentUser,
   getSessionInfo,
+  updateProfile,
   requestRoleElevation,
   logout,
   devLogin
@@ -21,6 +22,7 @@ router.post('/dev-login', devLogin);
 
 // Protected auth endpoints
 router.get('/me', protect, getCurrentUser);
+router.patch('/profile', protect, updateProfile);
 router.get('/session', protect, getSessionInfo);
 router.post('/request-role', protect, requestRoleElevation);
 router.post('/logout', protect, logout);
