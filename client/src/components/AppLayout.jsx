@@ -1,10 +1,72 @@
 import React, { useState } from 'react';
-import { Menu, ShieldCheck } from 'lucide-react';
+import { useLocation, Link } from 'react-router-dom';
+import { Menu, ShieldCheck, ArrowLeft } from 'lucide-react';
 import Sidebar from './Sidebar';
 import BRANDING from '../config/branding';
 
 const AppLayout = ({ children }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const location = useLocation();
+
+  // Remove sidebar completely on authentication and onboarding pages
+  const isAuthPage = ['/login', '/register', '/complete-profile'].includes(location.pathname);
+
+  if (isAuthPage) {
+    return (
+      <div className="portal-auth-layout" style={{ minHeight: '100vh', backgroundColor: '#f8fafc', display: 'flex', flexDirection: 'column' }}>
+        <header style={{
+          padding: '1rem 2rem',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          borderBottom: '1px solid #e2e8f0',
+          backgroundColor: '#ffffff'
+        }}>
+          <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', textDecoration: 'none', color: '#0f172a' }}>
+            <div style={{
+              width: '36px',
+              height: '36px',
+              borderRadius: '10px',
+              backgroundColor: '#7c3aed',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: '#ffffff'
+            }}>
+              <ShieldCheck size={20} />
+            </div>
+            <div>
+              <div style={{ fontWeight: 800, fontSize: '0.95rem', color: '#0f172a' }}>
+                {BRANDING.shortName}
+              </div>
+              <div style={{ fontSize: '0.725rem', color: '#64748b' }}>
+                {BRANDING.university}
+              </div>
+            </div>
+          </Link>
+
+          <Link to="/" style={{ fontSize: '0.85rem', color: '#7c3aed', fontWeight: 600, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+            <ArrowLeft size={16} /> Back to Portal
+          </Link>
+        </header>
+
+        <main style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem 1rem' }}>
+          {children}
+        </main>
+
+        <footer style={{
+          padding: '1rem 2rem',
+          backgroundColor: '#ffffff',
+          borderTop: '1px solid #e2e8f0',
+          fontSize: '0.8rem',
+          color: '#64748b',
+          textAlign: 'center'
+        }}>
+          <strong>{BRANDING.appName}</strong> • {BRANDING.university} • {BRANDING.team}
+        </footer>
+      </div>
+    );
+  }
 
   return (
     <div className="portal-app-layout" style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#f8fafc' }}>
