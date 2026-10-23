@@ -63,6 +63,35 @@ const userSchema = new mongoose.Schema(
       type: String,
       trim: true,
       default: ''
+    },
+    authMethod: {
+      type: String,
+      enum: ['google', 'dev'],
+      default: 'google'
+    },
+    lastLoginAt: {
+      type: Date,
+      default: Date.now
+    },
+    roleRequest: {
+      requestedRole: {
+        type: String,
+        enum: ['student', 'admin', 'security', null],
+        default: null
+      },
+      reason: {
+        type: String,
+        default: ''
+      },
+      requestedAt: {
+        type: Date,
+        default: null
+      },
+      status: {
+        type: String,
+        enum: ['none', 'pending', 'approved', 'rejected'],
+        default: 'none'
+      }
     }
   },
   {
@@ -83,6 +112,9 @@ userSchema.methods.toPublicJSON = function () {
     phone: this.phone,
     department: this.department,
     studentId: this.studentId,
+    authMethod: this.authMethod || 'google',
+    lastLoginAt: this.lastLoginAt,
+    roleRequest: this.roleRequest,
     createdAt: this.createdAt
   };
 };

@@ -56,6 +56,16 @@ const foundItemSchema = new mongoose.Schema(
       trim: true,
       default: 'With Finder (Pending Security Handover)'
     },
+    custodyLocation: {
+      type: String,
+      trim: true,
+      default: 'MAIN_POST'
+    },
+    assignedLocker: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Locker',
+      default: null
+    },
     // CRITICAL SECURITY REQUIREMENT:
     // Confidential distinguishing details (e.g., serial number suffix, passcode hint, engraving)
     // Never exposed in public search results.

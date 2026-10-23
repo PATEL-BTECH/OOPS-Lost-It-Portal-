@@ -14,11 +14,11 @@ const User = require('../models/user.model');
 
 /**
  * POST /api/auth/google
- * Verify Google ID token, enforce domain, establish session
+ * Verify Google ID token, enforce domain, validate requested role, establish session
  */
 const googleLogin = async (req, res, next) => {
   try {
-    const { credential } = req.body;
+    const { credential, intendedRole } = req.body;
 
     if (!credential) {
       return res.status(400).json({
@@ -30,10 +30,22 @@ const googleLogin = async (req, res, next) => {
     // 1. Verify credential signature, claims, and domain
     const googleProfile = await verifyGoogleCredential(credential);
 
-    // 2. Find or register user in MongoDB
+    // 2. Find or register user in MongoDB (New users strictly default to 'student')
     const user = await authenticateGoogleUser(googleProfile);
 
-    // 3. Issue application JWT and HttpOnly cookie
+    // 3. Enforce Role-Selection Gate (Section 7: Selecting a role must NEVER grant that role)
+    if (intendedRole && intendedRole !== 'student') {
+      if (user.role !== intendedRole) {
+        return res.status(403).json({
+          success: false,
+          code: 'ROLE_MISMATCH',
+          actualRole: user.role,
+          message: `Access Denied: Your university account is assigned the '${user.role.toUpperCase()}' role. You cannot sign in as '${intendedRole.toUpperCase()}'. Please select your authorized role or request role elevation from an Administrator.`
+        });
+      }
+    }
+
+    // 4. Issue application JWT and HttpOnly cookie
     const token = generateAuthToken(user);
     setAuthCookie(res, token);
 
@@ -57,6 +69,75 @@ const getCurrentUser = async (req, res) => {
     success: true,
     user: req.user.toPublicJSON()
   });
+};
+
+/**
+ * GET /api/auth/session
+ * Return safe session and identity diagnostics without exposing tokens or secrets
+ */
+const getSessionInfo = async (req, res) => {
+  res.status(200).json({
+    success: true,
+    session: {
+      userId: req.user._id,
+      name: req.user.name,
+      email: req.user.email,
+      role: req.user.role,
+      emailVerified: req.user.emailVerified,
+      authorizedDomain: config.universityEmailDomain || 'gsfcuniversity.ac.in',
+      authMethod: req.user.authMethod || 'google',
+      sessionStatus: 'Active (Authenticated via HttpOnly Cookie)',
+      lastLoginAt: req.user.lastLoginAt || req.user.updatedAt,
+      accountCreatedAt: req.user.createdAt,
+      serverTime: new Date().toISOString()
+    }
+  });
+};
+
+/**
+ * POST /api/auth/request-role
+ * Allow student to request role elevation for administrator review
+ */
+const requestRoleElevation = async (req, res, next) => {
+  try {
+    const { requestedRole, reason } = req.body;
+
+    if (!['admin', 'security'].includes(requestedRole)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid requested role. You can only request elevation to Admin or Security.'
+      });
+    }
+
+    if (!reason || reason.trim().length < 10) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please provide a valid justification (minimum 10 characters).'
+      });
+    }
+
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found.' });
+    }
+
+    user.roleRequest = {
+      requestedRole,
+      reason: reason.trim(),
+      requestedAt: new Date(),
+      status: 'pending'
+    };
+
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: `Your request for the ${requestedRole.toUpperCase()} role has been submitted for Administrator review.`,
+      roleRequest: user.roleRequest
+    });
+  } catch (error) {
+    next(error);
+  }
 };
 
 /**
@@ -124,6 +205,8 @@ const devLogin = async (req, res, next) => {
 module.exports = {
   googleLogin,
   getCurrentUser,
+  getSessionInfo,
+  requestRoleElevation,
   logout,
   devLogin
 };

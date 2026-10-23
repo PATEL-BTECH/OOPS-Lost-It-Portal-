@@ -12,6 +12,7 @@ const foundItemRoutes = require('./foundItem.routes');
 const notificationRoutes = require('./notification.routes');
 const matchingRoutes = require('./matching.routes');
 const claimRoutes = require('./claim.routes');
+const lockerRoutes = require('./locker.routes');
 const adminRoutes = require('./admin.routes');
 
 const apiRouter = express.Router();
@@ -26,6 +27,7 @@ apiRouter.use('/found-items', foundItemRoutes);
 apiRouter.use('/notifications', notificationRoutes);
 apiRouter.use('/matches', matchingRoutes);
 apiRouter.use('/claims', claimRoutes);
+apiRouter.use('/lockers', lockerRoutes);
 apiRouter.use('/admin', adminRoutes);
 
 // Base route for API discovery

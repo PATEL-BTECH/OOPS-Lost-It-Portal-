@@ -92,9 +92,9 @@ const authenticateGoogleUser = async (googleProfile) => {
       user.name = googleProfile.name;
       updated = true;
     }
-    if (updated) {
-      await user.save();
-    }
+    user.lastLoginAt = new Date();
+    user.authMethod = 'google';
+    await user.save();
   } else {
     // Check if user with same email exists (safe identity linking)
     user = await User.findOne({ email: googleProfile.email });
@@ -108,6 +108,8 @@ const authenticateGoogleUser = async (googleProfile) => {
       }
       user.googleSub = googleProfile.googleSub;
       user.emailVerified = true;
+      user.lastLoginAt = new Date();
+      user.authMethod = 'google';
       if (!user.profileImage && googleProfile.profileImage) {
         user.profileImage = googleProfile.profileImage;
       }
@@ -121,6 +123,8 @@ const authenticateGoogleUser = async (googleProfile) => {
         emailVerified: true,
         profileImage: googleProfile.profileImage,
         role: 'student', // Never grant elevated roles on registration
+        authMethod: 'google',
+        lastLoginAt: new Date(),
         isBlocked: false
       });
     }

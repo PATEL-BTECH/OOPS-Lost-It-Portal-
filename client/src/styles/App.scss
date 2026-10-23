@@ -361,3 +361,39 @@
   font-size: 0.875rem;
   color: $text-muted;
 }
+
+// ==========================================
+// Sidebar & Portal AppLayout Responsive Styles
+// ==========================================
+@media (max-width: 1024px) {
+  .sidebar-nav {
+    transform: translateX(-100%) !important;
+
+    &.mobile-visible {
+      transform: translateX(0) !important;
+    }
+  }
+
+  .mobile-close-btn {
+    display: flex !important;
+  }
+
+  .portal-main-wrapper {
+    margin-left: 0 !important;
+  }
+
+  .portal-mobile-topbar {
+    display: flex !important;
+  }
+
+  .portal-page-container {
+    padding: 1.25rem 1rem !important;
+  }
+
+  .portal-footer {
+    padding: 1.25rem 1rem !important;
+    flex-direction: column;
+    text-align: center;
+  }
+}
+

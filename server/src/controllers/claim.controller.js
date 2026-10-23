@@ -6,6 +6,7 @@
 const Claim = require('../models/claim.model');
 const FoundItem = require('../models/foundItem.model');
 const Notification = require('../models/notification.model');
+const Locker = require('../models/locker.model');
 const { uploadPhotoToGridFS } = require('../services/photo.service');
 
 /**
@@ -375,6 +376,25 @@ const recordHandover = async (req, res, next) => {
     foundItem.securityReceivedBy = req.user._id;
     foundItem.storageLocation = `Handed over to ${claim.claimant.name} (Receipt: ${receiptNumber})`;
     await foundItem.save();
+
+    // Release any physical storage locker assigned to this item
+    const assignedLocker = await Locker.findOne({ currentFoundItem: foundItem._id });
+    if (assignedLocker) {
+      assignedLocker.status = 'vacant';
+      assignedLocker.currentFoundItem = null;
+      assignedLocker.assignedBy = null;
+      assignedLocker.assignedAt = null;
+      if (assignedLocker.history && assignedLocker.history.length > 0) {
+        const lastHistory = assignedLocker.history[assignedLocker.history.length - 1];
+        if (!lastHistory.releasedAt) {
+          lastHistory.releasedAt = new Date();
+          lastHistory.releasedBy = req.user._id;
+          lastHistory.digitalReceiptNumber = receiptNumber;
+          lastHistory.notes = `Released upon student handover to ${claim.claimant.name} (${receiptNumber})`;
+        }
+      }
+      await assignedLocker.save();
+    }
 
     // Notify claimant with digital receipt
     await Notification.create({

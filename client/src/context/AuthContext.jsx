@@ -31,12 +31,12 @@ export const AuthProvider = ({ children }) => {
     loadUser();
   }, [loadUser]);
 
-  // Sign in with Google ID token credential
-  const loginWithGoogle = async (credential) => {
+  // Sign in with Google ID token credential with intendedRole verification
+  const loginWithGoogle = async (credential, intendedRole = null) => {
     setLoading(true);
     setAuthError(null);
     try {
-      const response = await api.post('/auth/google', { credential });
+      const response = await api.post('/auth/google', { credential, intendedRole });
       if (response.success && response.user) {
         setUser(response.user);
         return { success: true, user: response.user };
@@ -71,6 +71,16 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Request role elevation for administrator review
+  const requestRoleElevation = async (requestedRole, reason) => {
+    return await api.post('/auth/request-role', { requestedRole, reason });
+  };
+
+  // Safe Session Diagnostics
+  const getSessionInfo = async () => {
+    return await api.get('/auth/session');
+  };
+
   // Logout
   const logout = async () => {
     setLoading(true);
@@ -94,6 +104,8 @@ export const AuthProvider = ({ children }) => {
     isSecurity: user?.role === 'security',
     loginWithGoogle,
     loginDevUser,
+    requestRoleElevation,
+    getSessionInfo,
     logout,
     refreshUser: loadUser,
     clearError: () => setAuthError(null)

@@ -173,6 +173,9 @@ const updateUserRole = async (req, res, next) => {
 
     const oldRole = user.role;
     user.role = role;
+    if (user.roleRequest && user.roleRequest.status === 'pending') {
+      user.roleRequest.status = user.roleRequest.requestedRole === role ? 'approved' : 'rejected';
+    }
     await user.save();
 
     // Log to Audit Log
@@ -314,10 +317,32 @@ const deleteAnnouncement = async (req, res, next) => {
   }
 };
 
+const rejectRoleRequest = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found.' });
+    }
+    if (user.roleRequest) {
+      user.roleRequest.status = 'rejected';
+      await user.save();
+    }
+    res.status(200).json({
+      success: true,
+      message: `Role request for ${user.name} rejected.`,
+      user: user.toPublicJSON()
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getAnalytics,
   getUsers,
   updateUserRole,
+  rejectRoleRequest,
   toggleUserBlock,
   getAuditLogs,
   getAnnouncements,

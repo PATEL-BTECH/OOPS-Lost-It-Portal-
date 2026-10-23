@@ -46,6 +46,7 @@ import {
   getAnalytics, 
   getUsers, 
   updateUserRole, 
+  rejectRoleRequest,
   toggleUserBlock, 
   getAuditLogs, 
   getAnnouncements, 
@@ -208,6 +209,20 @@ const AdminDashboard = () => {
       fetchUsersData();
     } catch (err) {
       alert(`Failed to update role: ${err.message}`);
+    }
+  };
+
+  // Handle Reject Role Request
+  const handleRejectRole = async (userId) => {
+    if (!window.confirm("Are you sure you want to decline this user's role elevation request?")) {
+      return;
+    }
+    try {
+      await rejectRoleRequest(userId);
+      alert('Role elevation request declined.');
+      fetchUsersData();
+    } catch (err) {
+      alert(`Action failed: ${err.message}`);
     }
   };
 
@@ -735,6 +750,67 @@ const AdminDashboard = () => {
               </button>
             </div>
           </div>
+
+          {/* Pending Role Elevation Requests Card */}
+          {usersList.filter((u) => u.roleRequest?.status === 'pending').length > 0 && (
+            <div style={{
+              backgroundColor: '#fffbeb',
+              border: '2px solid #fef3c7',
+              borderRadius: '12px',
+              padding: '1.25rem',
+              marginBottom: '1.5rem'
+            }}>
+              <h3 style={{ fontSize: '1rem', color: '#92400e', margin: '0 0 0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <Crown size={18} color="#d97706" /> Pending Role Elevation Requests ({usersList.filter((u) => u.roleRequest?.status === 'pending').length})
+              </h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                {usersList.filter((u) => u.roleRequest?.status === 'pending').map((u) => (
+                  <div
+                    key={`req-${u.id || u._id}`}
+                    style={{
+                      backgroundColor: '#ffffff',
+                      border: '1px solid #fde68a',
+                      borderRadius: '8px',
+                      padding: '1rem',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      flexWrap: 'wrap',
+                      gap: '0.75rem'
+                    }}
+                  >
+                    <div>
+                      <div style={{ fontWeight: 600, color: '#0f172a' }}>
+                        {u.name} ({u.email})
+                      </div>
+                      <div style={{ fontSize: '0.85rem', color: '#78350f', marginTop: '0.2rem' }}>
+                        Requested Role: <strong style={{ textTransform: 'uppercase' }}>{u.roleRequest.requestedRole}</strong> • Current: {u.role}
+                      </div>
+                      <div style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '0.25rem' }}>
+                        Reason: <em>"{u.roleRequest.reason || 'Staff assignment verification requested'}"</em>
+                      </div>
+                    </div>
+                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                      <button
+                        onClick={() => handleRoleChange(u.id || u._id, u.roleRequest.requestedRole)}
+                        className="btn-primary"
+                        style={{ backgroundColor: '#059669', borderColor: '#059669', padding: '0.45rem 0.9rem', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}
+                      >
+                        <Check size={14} /> Approve as {u.roleRequest.requestedRole}
+                      </button>
+                      <button
+                        onClick={() => handleRejectRole(u.id || u._id)}
+                        className="btn-danger-outline"
+                        style={{ padding: '0.45rem 0.9rem', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}
+                      >
+                        <X size={14} /> Decline
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {loadingUsers ? (
             <p style={{ textAlign: 'center', padding: '3rem', color: '#64748b' }}>Loading user directory...</p>

@@ -7,6 +7,7 @@ const {
   getAnalytics,
   getUsers,
   updateUserRole,
+  rejectRoleRequest,
   toggleUserBlock,
   getAuditLogs,
   getAnnouncements,
@@ -27,6 +28,7 @@ router.use(authorize('admin'));
 router.get('/analytics', getAnalytics);
 router.get('/users', getUsers);
 router.patch('/users/:id/role', updateUserRole);
+router.patch('/users/:id/reject-role', rejectRoleRequest);
 router.patch('/users/:id/block', toggleUserBlock);
 router.get('/audit-logs', getAuditLogs);
 

@@ -12,6 +12,10 @@ export const updateUserRole = async (userId, role) => {
   return await api.patch(`/admin/users/${userId}/role`, { role });
 };
 
+export const rejectRoleRequest = async (userId) => {
+  return await api.patch(`/admin/users/${userId}/reject-role`);
+};
+
 export const toggleUserBlock = async (userId) => {
   return await api.patch(`/admin/users/${userId}/block`);
 };

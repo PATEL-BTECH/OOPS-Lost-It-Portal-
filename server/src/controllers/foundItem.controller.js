@@ -47,6 +47,7 @@ const createFoundItem = async (req, res, next) => {
       dateFound: dateFound ? new Date(dateFound) : new Date(),
       photo: photoId,
       handedToSecurity: isSecurityHanded,
+      custodyLocation: req.body.custodyLocation || 'MAIN_POST',
       storageLocation: storageLocation || (isSecurityHanded ? 'Handed to Main Campus Security' : 'With Finder (Pending Handover)'),
       verificationDetails: verificationDetails || '',
       reportedBy: req.user._id,
